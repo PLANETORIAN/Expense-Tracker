@@ -1,0 +1,29 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container{
+    width: 100vw;
+    height: 100vh;
+    background-color: blue;
+    padding-top: 50px;
+    text-align: center;
+}
+.name-content{
+    background-color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+.add-btn{
+    font-size: 20px;
+    width: 60px;
+    height: 30px;
+    border-radius: 15px;
+    border: none;
+    background-color: green;
+    cursor: pointer;
+}
