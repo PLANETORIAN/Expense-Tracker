@@ -4,7 +4,7 @@ let users = JSON.parse(localStorage.getItem("users"))|| [];
 
 const addName = document.querySelector(".add-user");
 const names = document.querySelector(".name-cover");
-const delUser = document.querySelector(".del-user");
+
 
 function displayNames() {
     names.innerHTML = "";
@@ -16,6 +16,15 @@ function displayNames() {
                 <p>Date n time</p>
                 <button class="del-user">delete</button>
             </div>`
+    });
+
+
+
+    document.querySelectorAll(".del-user").forEach((button) => {
+        button.addEventListener("click", function () {
+            let delName = this.parentElement.querySelector("h2").innerText;
+            deleteUser(delName);
+        });
     });
 }
 
@@ -30,11 +39,19 @@ function addUser(){
     console.log(users);
     newInput.value = "";
     }
-    displayNames();
-    
+    displayNames(); 
 }
+
 
 
 displayNames();
 
 addName.addEventListener("click", addUser);
+
+function deleteUser(delName){
+    users = users.filter(user=> user.name != delName);
+    localStorage.setItem("users",JSON.stringify(users));
+    displayNames();
+}
+
+const delUser = document.querySelectorAll(".del-user");
