@@ -364,11 +364,29 @@ function getAllTransactions() {
                         note: t.note 
                     });
                     
+
+                    let paidByUser = users.find(u => u.name === t.paidBy);
+                
+                    if (paidByUser) {
+                        if (!paidByUser.debit) {
+                            paidByUser.debit = [];
+                        }
+    
+                        
+                        const isAlreadyDebited = paidByUser.debit.some(deb => deb.note === `Paid for: ${t.note}` && deb.balance === t.Amount);
+    
+                        if (!isAlreadyDebited) {  
+                            paidByUser.debit.push({
+                                balance: t.Amount,
+                                note: `Paid for: ${t.note}`
+                            });
+                        }
+                    }
                 });
             });
         }
     });
-
+    localStorage.setItem("users", JSON.stringify(users));
     return transactions;
 }
 function settleUp(selectedName){
