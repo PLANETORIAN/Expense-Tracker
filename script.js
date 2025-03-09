@@ -11,10 +11,12 @@ function displayNames() {
     names.innerHTML = "";
 
     users.forEach((user) => {
+
+        
         names.innerHTML+=`
         <div class="name-content">
                 <h2>${user.name}</h2>
-                <p>Date n time</p>
+                <p>Current Balance:</p>
                 <button class="del-user">delete</button>
             </div>`
     });
@@ -73,11 +75,11 @@ const delUser = document.querySelectorAll(".del-user");
 function nameClick(selectedName){
     content.innerHTML=`<div class="container2">
             <div class="sidebar">
-                <h2>name</h2>
+                <h2>${selectedName}</h2>
                 <ul>
                     <li>home</li>
                     <li>dashboard</li>
-                    <li>splitwise</li>
+                    <li class="split">splitwise</li>
                     
                 </ul>
 
@@ -154,6 +156,11 @@ function nameClick(selectedName){
         document.querySelectorAll(".cats").forEach(c => c.style.border = "none")
     });
 
+    calBal(selectedName);
+
+
+    document.querySelector(".split").addEventListener("click", ()=>{splitWise(selectedName)});
+
 }
 
 
@@ -183,6 +190,7 @@ function addDebit(selectedName,selCat){
 
     
     }
+    calBal(selectedName);
 }
 
 function addCredit(selectedName){
@@ -203,6 +211,110 @@ function addCredit(selectedName){
     creInput.value="";
     creNote.value="";
     }
+    calBal(selectedName);
 }
 
 
+function calBal(selectedName){
+    let totalCredit = 0;
+    let totalDebit=0;
+    let totalBalance = 0;
+
+    let userIndex = users.findIndex(user=>user.name===selectedName);
+    let user = users[userIndex];
+    if (user.credit){
+        user.credit.forEach(entry => {
+            totalCredit += Number(entry.balance);
+        });
+    }
+    if (user.debit){
+        user.debit.forEach(entry=>{
+            totalDebit+=Number(entry.balance);
+        });
+    }
+    
+    
+    
+    totalBalance = totalCredit-totalDebit;
+    document.querySelector(".curr-bal").innerHTML=`<h1>${totalBalance}</h1>`
+
+  
+
+}
+
+function splitWise(){
+    document.querySelector(".main-content").innerHTML=`
+    <div class="curr-bal"><h1>Split</h1></div>
+            <div class="notes1">
+                <div class="container3">
+                    <div class="bal-container1">
+                        <div class="payments">
+                            <h1 class="balance">Add Payment</h1>
+                            <input type="number" id="add-payment" class="add-payment money-btn" placeholder="Enter Amount">
+                        </div>
+                        <div class="people">
+                            <div class="by"><p>Payment by</p></div>
+                            <div class="for"><span>Payment for</span></div>
+                        </div>
+                        <div class="sub-input">
+                            <input type="text" id="p-text" class="p-text money-btn" placeholder="add a note">
+    
+                            <button class="add-p submit-btn">Add Payment</button>
+                        </div>
+                        
+                    </div>
+                    <div class="settle-up">
+                        <span>Settle Up</span>
+                        <div class="suggested-payments">
+                            <div class="pay">
+                                <div class="pay-text">
+                                    <p>Amount</p>
+                                    <p>To Name</p>
+                                </div>
+                                
+                                
+                                <button class="pay-up">Settle up</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+
+                <div class="expense-container1">
+                    <div class="expense1">
+                        <h1>Expenses</h1>
+                    </div>
+                    <div class="past-expenses">
+                        <div class="expense-block">
+                            <div class="pay-details">
+                                <p>Note</p>
+                                <p>Paid By</p>
+                            </div>
+                            <div class="amount">Amount</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>`
+
+
+            let spAmount = document.querySelector('.add-payment');
+            let valAmount =  spAmount.value;
+            let spNote = document.querySelector('.p-text');
+            let valNote= spNote.value;
+
+            if(valAmount!=''){
+                let userIndex = users.findIndex(user => user.name === selectedName);
+
+                if (!users[userIndex].transaction){
+                    users[userIndex].transaction = [];
+        
+                }
+                users[userIndex].transaction.push({Amount: valAmount, note: valNote, paidBy: "name", splitAmont:["name","name"]});
+
+
+            }
+
+
+}
