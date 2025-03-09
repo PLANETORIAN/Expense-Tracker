@@ -52,7 +52,7 @@ function addUser(){
     users.push(newUser);
 
     localStorage.setItem("users", JSON.stringify(users));
-    console.log(users);
+    
     newInput.value = "";
     }
     displayNames(); 
@@ -242,7 +242,7 @@ function calBal(selectedName){
 
 }
 
-function splitWise(){
+function splitWise(selectedName){
     document.querySelector(".main-content").innerHTML=`
     <div class="curr-bal"><h1>Split</h1></div>
             <div class="notes1">
@@ -253,8 +253,19 @@ function splitWise(){
                             <input type="number" id="add-payment" class="add-payment money-btn" placeholder="Enter Amount">
                         </div>
                         <div class="people">
-                            <div class="by"><p>Payment by</p></div>
-                            <div class="for"><span>Payment for</span></div>
+                            <div class="by"><p class="paid-by">Payment by</p>
+                            <select id="payer-select">
+                            <option value="" disabled selected>Select Payer</option>
+                            ${users.map(user => `<option value="${user.name}">${user.name}</option>`).join('')}
+                        </select></div>
+                            <div class="for"><p>Payment for</p>
+                            <div class="pay-for-list">
+                            ${users.map(user => `
+                                <label>
+                                    <input type="checkbox" class="pay-for" value="${user.name}"> ${user.name}
+                                </label>
+                            `).join('')}
+                        </div></div>
                         </div>
                         <div class="sub-input">
                             <input type="text" id="p-text" class="p-text money-btn" placeholder="add a note">
@@ -296,25 +307,182 @@ function splitWise(){
                     </div>
 
                 </div>
-            </div>`
+            </div>
+    `
 
+            document.querySelector(".add-p").addEventListener("click",()=>{
+                let spAmount = document.querySelector('.add-payment');
+                let valAmount =  spAmount.value;
+                let spNote = document.querySelector('.p-text');
+                let valNote= spNote.value;
+                let paidBy = document.getElementById("payer-select").value;
+        let splitAmong = [...document.querySelectorAll(".pay-for:checked")].map(el => el.value);
 
-            let spAmount = document.querySelector('.add-payment');
-            let valAmount =  spAmount.value;
-            let spNote = document.querySelector('.p-text');
-            let valNote= spNote.value;
+                if(valAmount!=''){
+                    let userIndex = users.findIndex(user => user.name === selectedName);
 
-            if(valAmount!=''){
-                let userIndex = users.findIndex(user => user.name === selectedName);
-
-                if (!users[userIndex].transaction){
+                    if (!users[userIndex].transaction){
                     users[userIndex].transaction = [];
         
-                }
-                users[userIndex].transaction.push({Amount: valAmount, note: valNote, paidBy: "name", splitAmont:["name","name"]});
+                    }
+                users[userIndex].transaction.push({Amount: valAmount, note: valNote, paidBy: paidBy, splitAmong:splitAmong});
 
+                localStorage.setItem("users", JSON.stringify(users));
 
+                spAmount.value="";
+                spNote.value="";
+                document.getElementById("payer-select").value= 0;
+                document.querySelectorAll(".pay-for:checked").forEach(checkbox=> checkbox.checked=0);
+
+                settleUp(selectedName);
+                displaySplitTransactions();
             }
+            })
+
+            settleUp(selectedName);
+            displaySplitTransactions();
+
+            
 
 
 }
+
+
+function getAllTransactions() {
+    let transactions = [];
+
+    users.forEach(user => {
+        if (user.transaction) {
+            user.transaction.forEach(t => {
+                let amountPerPerson = t.Amount / t.splitAmong.length;
+
+                t.splitAmong.forEach(person => {
+                    transactions.push({ 
+                        from: person, 
+                        to: t.paidBy, 
+                        amount: amountPerPerson,
+                        note: t.note 
+                    });
+                    
+                });
+            });
+        }
+    });
+
+    return transactions;
+}
+function settleUp(selectedName){
+
+    let payments = getAllTransactions();
+    let payCont = document.querySelector(".suggested-payments");
+    payCont.innerHTML = "";
+
+    payments.forEach(payment => {
+        if(payment.from==selectedName){
+            payCont.innerHTML+=`<div class="pay">
+            <div class="pay-text">
+                <p>${payment.amount}</p>
+                <p>${payment.to}</p>
+            </div>
+                                
+                                
+            <button class="pay-up">Settle up</button>
+        </div>`
+        document.querySelectorAll(".pay-up").forEach(button => {
+            button.addEventListener("click",function () {
+                // users.forEach(user => {
+                //     if (user.transaction) {
+                //         user.transaction = user.transaction.filter(t => !(t.Amount == payment.amount && t.note == payment.note && t.paidBy == payment.to && t.splitAmong.includes(payment.from)));
+                //     }
+                //     localStorage.setItem("users", JSON.stringify(users));
+                //     settleUp(selectedName);
+                // });
+                users.forEach(user => {
+                    if (user.transaction) {
+                        user.transaction = user.transaction.filter(t =>
+                            !(
+                                Number(t.Amount) === Number(payment.amount * t.splitAmong.length) &&
+                                t.note === payment.note &&
+                                t.paidBy === payment.to &&
+                                t.splitAmong.includes(payment.from)
+                            )
+                        );
+                    }
+                });
+                localStorage.setItem("users", JSON.stringify(users));
+
+                // Refresh UI
+                settleUp(selectedName);
+                
+            })
+        })
+        }
+    })
+
+    // payments.forEach(payment => {
+    //     if (payment.from == selectedName) {
+    //         let payDiv = document.createElement("div");
+    //         payDiv.classList.add("pay");
+    //         payDiv.innerHTML = `
+    //             <div class="pay-text">
+    //                 <p>${payment.amount}</p>
+    //                 <p>${payment.to}</p>
+    //             </div>
+    //             <button class="pay-up">Settle up</button>
+    //         `;
+    
+    //         payDiv.querySelector(".pay-up").addEventListener("click", function () {
+    //             users.forEach(user => {
+    //                 if (user.transaction) {
+    //                     user.transaction = user.transaction.filter(t => 
+    //                         !(Number(t.Amount) === Number(payment.amount) &&
+    //                         t.note === payment.note &&
+    //                         t.paidBy === payment.to &&
+    //                         t.splitAmong.includes(payment.from))
+    //                     );
+    //                 }
+    //             });
+    
+    //             localStorage.setItem("users", JSON.stringify(users));
+    //             settleUp(selectedName);
+    //         });
+    
+    //         payCont.appendChild(payDiv);
+    //     }
+    // });
+    
+    
+
+}
+
+function displaySplitTransactions() {
+    let transactionHTML = '';
+
+    users.forEach(user => {
+        if (user.transaction) {
+            user.transaction.forEach(t => {
+                transactionHTML += `
+                    <div class="expense-block">
+                        <div class="pay-details">
+                            <p>Note: ${t.note}</p>
+                            <p>Paid By: ${t.paidBy}</p>
+                            
+                        </div>
+                        <div class="amount">Amount: ${t.Amount}</div>
+                    </div>
+                `;
+            });
+        }
+    });
+
+    if (transactionHTML === '') {
+        transactionHTML = `<p>No transactions to display.</p>`;
+    }
+
+    document.querySelector(".past-expenses").innerHTML = transactionHTML;
+}
+
+
+
+
+
