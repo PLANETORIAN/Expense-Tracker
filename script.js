@@ -16,8 +16,8 @@ function displayNames() {
         names.innerHTML+=`
         <div class="name-content">
                 <h2>${user.name}</h2>
-                <p>Current Balance:</p>
-                <button class="del-user">delete</button>
+                
+                <button class="del-user">Delete</button>
             </div>`
     });
 
@@ -77,9 +77,9 @@ function nameClick(selectedName){
             <div class="sidebar">
                 <h2>${selectedName}</h2>
                 <ul>
-                    <li>home</li>
-                    <li>dashboard</li>
-                    <li class="split">splitwise</li>
+                    <li class="home">home</li>
+                    <li class = "dashboard">dashboard</li>
+                    <li class="split">split (working)</li>
                     
                 </ul>
 
@@ -108,51 +108,51 @@ function nameClick(selectedName){
                         
     
                         <div class="category">
-                            <p>category
+                            <p class="cat-text">Category
                             </p>
                             <div class="cat-container">
-                                <div class="cats">0</div>
-                            <div class="cats">1</div>
-                            <div class="cats">2</div>
-                            <div class="cats">3</div>
-                            <div class="cats">4</div>
-                            <div class="cats">5</div>
-                            <div class="cats">6</div>
-                            <div class="cats">7</div>
-                            </div>
+                                <div class="cats" data-id="0"><i class="fa-solid fa-house"></i> </div>
+                                <div class="cats" data-id="1"><i class="fa-solid fa-utensils"></i> </div>
+                                <div class="cats" data-id="2"><i class="fa-solid fa-car-side"></i> </div>
+                                <div class="cats" data-id="3"><i class="fa-solid fa-user-graduate"></i> </div>
+                                <div class="cats" data-id="4"><i class="fa-solid fa-gamepad"></i> </div>
+                                <div class="cats" data-id="5"><i class="fa-solid fa-suitcase-medical"></i> </div>
+                                <div class="cats" data-id="6"><i class="fa-solid fa-money-bill-trend-up"></i> </div>
+                                <div class="cats" data-id="7">Others</div>
+
                             
                         </div>
                         
-                        <input type="text" id="d-text" class="d-text money-btn" placeholder="add a note">
-    
-                        <button class="add-expense submit-btn">Add Expense</button>
+                        
     
                     </div>
+                    <input type="text" id="d-text" class="d-text money-btn" placeholder="add a note">
+    
+                        <button class="add-expense submit-btn">Add Expense</button>
                 </div>
                 
         </div>
     </div>`
 
+    
+    const categoryLabels = ['Housing', 'Food', 'Transportation', 'Education', 'Entertainment', 'Healthcare', 'Investment', 'Others'];
     let selCat=0;
-    document.querySelectorAll(".cats").forEach((cat)=>{
-        cat.addEventListener("click", function (){
-            selCat = this.innerText;
-
-            //chatgpted
-
+    document.querySelectorAll(".cats").forEach((cat) => {
+        cat.addEventListener("click", function () {
+            selCat = this.getAttribute("data-id");
+    
             document.querySelectorAll(".cats").forEach(c => c.style.border = "none");
-        
             this.style.border = "2px solid red";
-        }   
-        )
-    })
+        });
+    });
+    
 
     let addDeposit = content.querySelector(".add-balance");
     addDeposit.addEventListener("click", ()=> addCredit(selectedName));
 
     let addExpense=content.querySelector(".add-expense");
     
-    addExpense.addEventListener("click",()=>{addDebit(selectedName,selCat)
+    addExpense.addEventListener("click",()=>{addDebit(selectedName, categoryLabels[selCat])
         document.querySelectorAll(".cats").forEach(c => c.style.border = "none")
     });
 
@@ -160,6 +160,8 @@ function nameClick(selectedName){
 
 
     document.querySelector(".split").addEventListener("click", ()=>{splitWise(selectedName)});
+    document.querySelector(".dashboard").addEventListener("click", ()=>{showDashboard(selectedName)});
+    document.querySelector(".home").addEventListener("click", ()=>{nameClick(selectedName)});
 
 }
 
@@ -184,6 +186,12 @@ function addDebit(selectedName,selCat){
         }
         users[userIndex].debit.push({ balance: newDeb, note: newDNote, category:selCat });
 
+        
+        if (!users[userIndex].statement){
+            users[userIndex].statement = [];
+        }
+        users[userIndex].statement.push({type:"debit",note:newDNote, amount:newDeb,category:selCat});
+
         localStorage.setItem("users", JSON.stringify(users));
     debInput.value = "";
     debNote.value = "";
@@ -204,9 +212,12 @@ function addCredit(selectedName){
 
         if (!users[userIndex].credit){
             users[userIndex].credit = [];
-
-        }
+        };
         users[userIndex].credit.push({balance: newCre, note: newCNote});
+        if (!users[userIndex].statement){
+            users[userIndex].statement = [];
+        }
+        users[userIndex].statement.push({type:"credit",note:newCNote, amount:newCre})
         localStorage.setItem("users",JSON.stringify(users));
     creInput.value="";
     creNote.value="";
@@ -236,271 +247,104 @@ function calBal(selectedName){
     
     
     totalBalance = totalCredit-totalDebit;
-    document.querySelector(".curr-bal").innerHTML=`<h1>${totalBalance}</h1>`
+    document.querySelector(".curr-bal").innerHTML=`<h1>Balance: ${totalBalance}</h1>`
 
   
 
 }
 
-function splitWise(selectedName){
+// 
+
+function showDashboard(selectedName){
+    let user = users.find(user => user.name === selectedName);
     document.querySelector(".main-content").innerHTML=`
-    <div class="curr-bal"><h1>Split</h1></div>
-            <div class="notes1">
-                <div class="container3">
-                    <div class="bal-container1">
-                        <div class="payments">
-                            <h1 class="balance">Add Payment</h1>
-                            <input type="number" id="add-payment" class="add-payment money-btn" placeholder="Enter Amount">
-                        </div>
-                        <div class="people">
-                            <div class="by"><p class="paid-by">Payment by</p>
-                            <select id="payer-select">
-                            <option value="" disabled selected>Select Payer</option>
-                            ${users.map(user => `<option value="${user.name}">${user.name}</option>`).join('')}
-                        </select></div>
-                            <div class="for"><p>Payment for</p>
-                            <div class="pay-for-list">
-                            ${users.map(user => `
-                                <label>
-                                    <input type="checkbox" class="pay-for" value="${user.name}"> ${user.name}
-                                </label>
-                            `).join('')}
-                        </div></div>
-                        </div>
-                        <div class="sub-input">
-                            <input type="text" id="p-text" class="p-text money-btn" placeholder="add a note">
-    
-                            <button class="add-p submit-btn">Add Payment</button>
-                        </div>
-                        
-                    </div>
-                    <div class="settle-up">
-                        <span>Settle Up</span>
-                        <div class="suggested-payments">
-                            <div class="pay">
-                                <div class="pay-text">
-                                    <p>Amount</p>
-                                    <p>To Name</p>
-                                </div>
-                                
-                                
-                                <button class="pay-up">Settle up</button>
+    <div class="curr-bal"><h1>Dashboard</h1></div>
+
+            <div class="chart">
+                
+                <canvas id = "myChart" class="my-chart" ></canvas></div>
+            <div class="past-transaction">
+                
+            </div>`
+
+
+            let transactionContainer = document.querySelector(".past-transaction");
+
+            if (user.statement) {
+                user.statement.forEach(transaction => {
+                    transactionContainer.innerHTML += `
+                        <div class="transaction-detail">
+                            <div class="tText">
+                                <div class="tNote">Note: ${transaction.note || 'No Note'}</div>
+                                <div class="tCat">Category: ${transaction.category || '-'}</div>
                             </div>
+                            <div class="tAmount">${transaction.type === "debit" ? '-' : ''}${transaction.amount}</div>
                         </div>
-                        
-                    </div>
-                </div>
-
-
-                <div class="expense-container1">
-                    <div class="expense1">
-                        <h1>Expenses</h1>
-                    </div>
-                    <div class="past-expenses">
-                        <div class="expense-block">
-                            <div class="pay-details">
-                                <p>Note</p>
-                                <p>Paid By</p>
-                            </div>
-                            <div class="amount">Amount</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-    `
-
-            document.querySelector(".add-p").addEventListener("click",()=>{
-                let spAmount = document.querySelector('.add-payment');
-                let valAmount =  spAmount.value;
-                let spNote = document.querySelector('.p-text');
-                let valNote= spNote.value;
-                let paidBy = document.getElementById("payer-select").value;
-        let splitAmong = [...document.querySelectorAll(".pay-for:checked")].map(el => el.value);
-
-                if(valAmount!=''){
-                    let userIndex = users.findIndex(user => user.name === selectedName);
-
-                    if (!users[userIndex].transaction){
-                    users[userIndex].transaction = [];
-        
-                    }
-                users[userIndex].transaction.push({Amount: valAmount, note: valNote, paidBy: paidBy, splitAmong:splitAmong});
-
-                localStorage.setItem("users", JSON.stringify(users));
-
-                spAmount.value="";
-                spNote.value="";
-                document.getElementById("payer-select").value= 0;
-                document.querySelectorAll(".pay-for:checked").forEach(checkbox=> checkbox.checked=0);
-
-                settleUp(selectedName);
-                displaySplitTransactions();
+                    `;
+                });
             }
-            })
-
-            settleUp(selectedName);
-            displaySplitTransactions();
-
+            else{
+                transactionContainer.innerHTML=`<h2>No Transaction Record</h2>`
+    
+            }
             
+            const ctx = document.getElementById('myChart');
+const categoryLabels = ['Housing', 'Food', 'Transportation', 'Education', 'Entertainment', 'Healthcare', 'Investment', 'Others'];
+const categoryData = Array(8).fill(0);
 
-
-}
-
-
-function getAllTransactions() {
-    let transactions = [];
-
-    users.forEach(user => {
-        if (user.transaction) {
-            user.transaction.forEach(t => {
-                let amountPerPerson = t.Amount / t.splitAmong.length;
-
-                t.splitAmong.forEach(person => {
-                    transactions.push({ 
-                        from: person, 
-                        to: t.paidBy, 
-                        amount: amountPerPerson,
-                        note: t.note 
-                    });
-                    
-
-                    let paidByUser = users.find(u => u.name === t.paidBy);
-                
-                    if (paidByUser) {
-                        if (!paidByUser.debit) {
-                            paidByUser.debit = [];
-                        }
-    
-                        
-                        const isAlreadyDebited = paidByUser.debit.some(deb => deb.note === `Paid for: ${t.note}` && deb.balance === t.Amount);
-    
-                        if (!isAlreadyDebited) {  
-                            paidByUser.debit.push({
-                                balance: t.Amount,
-                                note: `Paid for: ${t.note}`
-                            });
-                        }
-                    }
-                });
-            });
+if (user.statement) {
+    user.statement.forEach(transaction => {
+        if (transaction.type === "debit" && transaction.category !== undefined) {
+            const categoryIndex = categoryLabels.indexOf(transaction.category);
+            if (categoryIndex !== -1) {
+                categoryData[categoryIndex] += Number(transaction.amount);
+            }
         }
     });
-    localStorage.setItem("users", JSON.stringify(users));
-    return transactions;
 }
-function settleUp(selectedName){
 
-    let payments = getAllTransactions();
-    let payCont = document.querySelector(".suggested-payments");
-    payCont.innerHTML = "";
+function createChart() {
+    const totalAmount = categoryData.reduce((acc, value) => acc + value, 0);
 
-    payments.forEach(payment => {
-        if(payment.from==selectedName){
-            payCont.innerHTML+=`<div class="pay">
-            <div class="pay-text">
-                <p>${payment.amount}</p>
-                <p>${payment.to}</p>
-            </div>
-                                
-                                
-            <button class="pay-up">Settle up</button>
-        </div>`
-        document.querySelectorAll(".pay-up").forEach(button => {
-            button.addEventListener("click",function () {
-                // users.forEach(user => {
-                //     if (user.transaction) {
-                //         user.transaction = user.transaction.filter(t => !(t.Amount == payment.amount && t.note == payment.note && t.paidBy == payment.to && t.splitAmong.includes(payment.from)));
-                //     }
-                //     localStorage.setItem("users", JSON.stringify(users));
-                //     settleUp(selectedName);
-                // });
-                users.forEach(user => {
-                    if (user.transaction) {
-                        user.transaction = user.transaction.filter(t =>
-                            !(
-                                Number(t.Amount) === Number(payment.amount * t.splitAmong.length) &&
-                                t.note === payment.note &&
-                                t.paidBy === payment.to &&
-                                t.splitAmong.includes(payment.from)
-                            )
-                        );
+    new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: categoryLabels,
+            datasets: [{
+                label: "Expense",
+                data: categoryData,
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.5)', 
+                    'rgba(255, 99, 132, 0.5)', 
+                    'rgba(54, 162, 235, 0.5)', 
+                    'rgba(255, 206, 86, 0.5)', 
+                    'rgba(153, 102, 255, 0.5)', 
+                    'rgba(255, 159, 64, 0.5)', 
+                    'rgba(199, 199, 199, 0.5)', 
+                    'rgba(128, 0, 128, 0.5)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const value = tooltipItem.raw;
+                            const percentage = ((value / totalAmount) * 100).toFixed(2);
+                            return `Category ${tooltipItem.label}: ${percentage}%`;
+                        }
                     }
-                });
-                localStorage.setItem("users", JSON.stringify(users));
-
-                // Refresh UI
-                settleUp(selectedName);
-                
-            })
-        })
-        }
-    })
-
-    // payments.forEach(payment => {
-    //     if (payment.from == selectedName) {
-    //         let payDiv = document.createElement("div");
-    //         payDiv.classList.add("pay");
-    //         payDiv.innerHTML = `
-    //             <div class="pay-text">
-    //                 <p>${payment.amount}</p>
-    //                 <p>${payment.to}</p>
-    //             </div>
-    //             <button class="pay-up">Settle up</button>
-    //         `;
-    
-    //         payDiv.querySelector(".pay-up").addEventListener("click", function () {
-    //             users.forEach(user => {
-    //                 if (user.transaction) {
-    //                     user.transaction = user.transaction.filter(t => 
-    //                         !(Number(t.Amount) === Number(payment.amount) &&
-    //                         t.note === payment.note &&
-    //                         t.paidBy === payment.to &&
-    //                         t.splitAmong.includes(payment.from))
-    //                     );
-    //                 }
-    //             });
-    
-    //             localStorage.setItem("users", JSON.stringify(users));
-    //             settleUp(selectedName);
-    //         });
-    
-    //         payCont.appendChild(payDiv);
-    //     }
-    // });
-    
-    
-
-}
-
-function displaySplitTransactions() {
-    let transactionHTML = '';
-
-    users.forEach(user => {
-        if (user.transaction) {
-            user.transaction.forEach(t => {
-                transactionHTML += `
-                    <div class="expense-block">
-                        <div class="pay-details">
-                            <p>Note: ${t.note}</p>
-                            <p>Paid By: ${t.paidBy}</p>
-                            
-                        </div>
-                        <div class="amount">Amount: ${t.Amount}</div>
-                    </div>
-                `;
-            });
+                }
+            }
         }
     });
-
-    if (transactionHTML === '') {
-        transactionHTML = `<p>No transactions to display.</p>`;
-    }
-
-    document.querySelector(".past-expenses").innerHTML = transactionHTML;
 }
 
-
-
+if (ctx) {
+    createChart();
+}
+}
 
 

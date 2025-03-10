@@ -1,0 +1,78 @@
+/* 
+.people{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    padding-top: 10px;
+}
+.by{
+    background-color: aqua;
+    width: 80%;
+    height: 2rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.for{
+    background-color: aqua;
+    width: 80%;
+    height: 2rem;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container3{
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+    height: 100%;    
+} */
+/* .settle-up{
+    background-color: rgb(173, 146, 146);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+.pay{
+    background-color: lightcoral;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 220px;
+    min-height: 40px;
+    padding:0 15px;
+    border-radius: 20px;
+    margin: 5px 0;
+}
+.pay-text{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.past-expenses{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.expense-block{
+    background-color: darkgreen;
+    width: 220px;
+    min-height: 45px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    margin: 5px 0;
+}
+.pay-details{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+} */

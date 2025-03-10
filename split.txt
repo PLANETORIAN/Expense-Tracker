@@ -1,0 +1,212 @@
+
+
+
+// function splitWise(selectedName){
+//     document.querySelector(".main-content").innerHTML=`
+//     <div class="curr-bal"><h1>Split</h1></div>
+//             <div class="notes1">
+//                 <div class="container3">
+//                     <div class="bal-container1">
+//                         <div class="payments">
+//                             <h1 class="balance">Add Payment</h1>
+//                             <input type="number" id="add-payment" class="add-payment money-btn" placeholder="Enter Amount">
+//                         </div>
+//                         <div class="people">
+//                             <div class="by"><p class="paid-by">Payment by</p>
+//                             <select id="payer-select">
+//                             <option value="" disabled selected>Select Payer</option>
+//                             ${users.map(user => `<option value="${user.name}">${user.name}</option>`).join('')}
+//                         </select></div>
+//                             <div class="for"><p>Payment for</p>
+//                             <div class="pay-for-list">
+//                             ${users.map(user => `
+//                                 <label>
+//                                     <input type="checkbox" class="pay-for" value="${user.name}"> ${user.name}
+//                                 </label>
+//                             `).join('')}
+//                         </div></div>
+//                         </div>
+//                         <div class="sub-input">
+//                             <input type="text" id="p-text" class="p-text money-btn" placeholder="add a note">
+    
+//                             <button class="add-p submit-btn">Add Payment</button>
+//                         </div>
+                        
+//                     </div>
+//                     <div class="settle-up">
+//                         <span>Settle Up</span>
+//                         <div class="suggested-payments">
+//                             <div class="pay">
+//                                 <div class="pay-text">
+//                                     <p>Amount</p>
+//                                     <p>To Name</p>
+//                                 </div>
+                                
+                                
+//                                 <button class="pay-up">Settle up</button>
+//                             </div>
+//                         </div>
+                        
+//                     </div>
+//                 </div>
+
+
+//                 <div class="expense-container1">
+//                     <div class="expense1">
+//                         <h1>Expenses</h1>
+//                     </div>
+//                     <div class="past-expenses">
+//                         <div class="expense-block">
+//                             <div class="pay-details">
+//                                 <p>Note</p>
+//                                 <p>Paid By</p>
+//                             </div>
+//                             <div class="amount">Amount</div>
+//                         </div>
+//                     </div>
+
+//                 </div>
+//             </div>
+//     `
+
+//             document.querySelector(".add-p").addEventListener("click",()=>{
+//                 let spAmount = document.querySelector('.add-payment');
+//                 let valAmount =  spAmount.value;
+//                 let spNote = document.querySelector('.p-text');
+//                 let valNote= spNote.value;
+//                 let paidBy = document.getElementById("payer-select").value;
+//         let splitAmong = [...document.querySelectorAll(".pay-for:checked")].map(el => el.value);
+
+//                 if(valAmount!=''){
+//                     let userIndex = users.findIndex(user => user.name === selectedName);
+
+//                     if (!users[userIndex].transaction){
+//                     users[userIndex].transaction = [];
+        
+//                     }
+//                 users[userIndex].transaction.push({Amount: valAmount, note: valNote, paidBy: paidBy, splitAmong:splitAmong});
+
+//                 localStorage.setItem("users", JSON.stringify(users));
+
+//                 spAmount.value="";
+//                 spNote.value="";
+//                 document.getElementById("payer-select").value= 0;
+//                 document.querySelectorAll(".pay-for:checked").forEach(checkbox=> checkbox.checked=0);
+
+//                 settleUp(selectedName);
+//                 displaySplitTransactions();
+//             }
+//             })
+
+//             settleUp(selectedName);
+//             displaySplitTransactions();
+
+            
+
+
+// }
+
+
+// function getAllTransactions() {
+//     let transactions = [];
+
+//     users.forEach(user => {
+//         if (user.transaction) {
+//             user.transaction.forEach(t => {
+//                 let amountPerPerson = t.Amount / t.splitAmong.length;
+
+//                 t.splitAmong.forEach(person => {
+//                     transactions.push({ 
+//                         from: person, 
+//                         to: t.paidBy, 
+//                         amount: amountPerPerson,
+//                         note: t.note 
+//                     });
+                    
+
+//                     let paidByUser = users.find(u => u.name === t.paidBy);
+                
+//                     if (paidByUser) {
+//                         if (!paidByUser.debit) {
+//                             paidByUser.debit = [];
+//                         }
+    
+                        
+//                         const isAlreadyDebited = paidByUser.debit.some(deb => deb.note === `Paid for: ${t.note}` && deb.balance === t.Amount);
+    
+//                         if (!isAlreadyDebited) {  
+//                             paidByUser.debit.push({
+//                                 balance: t.Amount,
+//                                 note: `Paid for: ${t.note}`
+//                             });
+//                         }
+//                     }
+//                 });
+//             });
+//         }
+//     });
+//     localStorage.setItem("users", JSON.stringify(users));
+//     return transactions;
+// }
+// function settleUp(selectedName){
+
+//     let payments = getAllTransactions();
+//     let payCont = document.querySelector(".suggested-payments");
+//     payCont.innerHTML = "";
+
+//     payments.forEach(payment => {
+//         if(payment.from==selectedName){
+//             payCont.innerHTML+=`<div class="pay">
+//             <div class="pay-text">
+//                 <p>${payment.amount}</p>
+//                 <p>${payment.to}</p>
+//             </div>
+                                
+                                
+//             <button class="pay-up">Settle up</button>
+//         </div>`
+        
+
+//         payCont.querySelectorAll(".pay-up").forEach((button, index) => {
+//             const payment = payments[index]; 
+//             button.addEventListener("click", () => {
+                
+        
+//                 users.forEach(user => {
+//                     if (user.transaction) { 
+//                         user.transaction.forEach(t => {
+//                             if (
+//                                 Number(t.Amount) === Number(payment.amount * t.splitAmong.length) &&
+//                                 t.note === payment.note &&
+//                                 t.paidBy === payment.to
+//                             ) { 
+//                                 const indexToRemove = t.splitAmong.indexOf(payment.from);
+        
+//                                 if (indexToRemove !== -1) {
+//                                     t.splitAmong.splice(indexToRemove, 1); 
+//                                 }
+//                             }
+//                         });
+//                     }
+//                 });
+        
+//                 localStorage.setItem("users", JSON.stringify(users)); // Save to localStorage
+//                 settleUp(selectedName); // Refresh display
+//             });
+//         });
+        
+        
+        
+        
+        
+//         }
+//     })
+
+    
+    
+    
+
+// };
+
+
+
