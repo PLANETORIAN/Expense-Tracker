@@ -159,7 +159,6 @@ function nameClick(selectedName){
     calBal(selectedName);
 
 
-    document.querySelector(".split").addEventListener("click", ()=>{splitWise(selectedName)});
     document.querySelector(".dashboard").addEventListener("click", ()=>{showDashboard(selectedName)});
     document.querySelector(".home").addEventListener("click", ()=>{nameClick(selectedName)});
 
