@@ -1,7 +1,6 @@
 let users = JSON.parse(localStorage.getItem("users"))|| [];
 
 
-
 const addName = document.querySelector(".add-user");
 const names = document.querySelector(".name-cover");
 const content = document.querySelector(".container");
@@ -26,8 +25,6 @@ function displayNames() {
     document.querySelectorAll(".del-user").forEach((button) => {
         button.addEventListener("click", function () {
 
-
-            //doubt
             event.stopPropagation();
 
 
@@ -54,6 +51,7 @@ function addUser(){
     localStorage.setItem("users", JSON.stringify(users));
     
     newInput.value = "";
+    newInput.blur();
     }
     displayNames(); 
 }
@@ -176,10 +174,6 @@ function addDebit(selectedName,selCat){
 
         let userIndex = users.findIndex(user => user.name === selectedName);
 
-
-        //chatgpted 
-
-
         if (!users[userIndex].debit) {
             users[userIndex].debit = [];
         }
@@ -193,8 +187,10 @@ function addDebit(selectedName,selCat){
         users[userIndex].statement.push({type:"debit",note:newDNote, amount:newDeb,category:selCat});
 
         localStorage.setItem("users", JSON.stringify(users));
-    debInput.value = "";
-    debNote.value = "";
+        debInput.value = "";
+        debNote.value = "";
+        debInput.blur();  
+        debNote.blur();
 
     
     }
@@ -221,6 +217,9 @@ function addCredit(selectedName){
         localStorage.setItem("users",JSON.stringify(users));
     creInput.value="";
     creNote.value="";
+    creInput.blur();  
+    creNote.blur();
+
     }
     calBal(selectedName);
 }
