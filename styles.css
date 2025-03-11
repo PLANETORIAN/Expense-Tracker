@@ -160,6 +160,7 @@ li{
     width: 6rem;
     border-radius: 15px;
     border: none;
+    margin: 15px;
 }
 .cat-text{
     font-size: 1.2rem;
@@ -171,6 +172,7 @@ li{
     gap: 10px;
     justify-content: space-around;
     align-items: center;
+    margin-top: 15px;
 }
 .cat-container{
     display: flex;

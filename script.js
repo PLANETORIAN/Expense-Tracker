@@ -136,13 +136,13 @@ function nameClick(selectedName){
 
     
     const categoryLabels = ['Housing', 'Food', 'Transportation', 'Education', 'Entertainment', 'Healthcare', 'Investment', 'Others'];
-    let selCat=0;
+    let selCat=7;
     document.querySelectorAll(".cats").forEach((cat) => {
         cat.addEventListener("click", function () {
             selCat = this.getAttribute("data-id");
     
             document.querySelectorAll(".cats").forEach(c => c.style.border = "none");
-            this.style.border = "2px solid red";
+            this.style.border = "2px solid #112D4E";
         });
     });
     
@@ -183,6 +183,7 @@ function addDebit(selectedName,selCat){
         if (!users[userIndex].debit) {
             users[userIndex].debit = [];
         }
+        
         users[userIndex].debit.push({ balance: newDeb, note: newDNote, category:selCat });
 
         
@@ -252,7 +253,7 @@ function calBal(selectedName){
 
 }
 
-// 
+
 
 function showDashboard(selectedName){
     let user = users.find(user => user.name === selectedName);
